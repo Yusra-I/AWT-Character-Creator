@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWT Character Creator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f0f4f8;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+    h1 {
+        color: #4a6cf7;
+    }
+    .creator-container {
+        background: #fff;
+        padding: 20px 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        max-width: 500px;
+        width: 100%;
+    }
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+    input, select, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+    button {
+        background: #4a6cf7;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+    button:hover {
+        background: #3a53c7;
+    }
+    .message {
+        margin-top: 15px;
+        font-weight: bold;
+        color: green;
+    }
+</style>
+</head>
+<body>
+
+<h1>AWT Character Creator</h1>
+
+<div class="creator-container">
+    <label for="wolfName">Character Name:</label>
+    <input type="text" id="wolfName" placeholder="Enter your wolf's name">
+
+    <label for="wolfType">Choose Your Wolf:</label>
+    <select id="wolfType">
+        <optgroup label="🐺 Common Wolves">
+            <option>Tan Wolf</option>
+            <option>Amber Wolf</option>
+            <option>Crimson Wolf</option>
+            <option>Brown Wolf</option>
+            <option>Grey Wolf</option>
+            <option>Umbra Wolf</option>
+            <option>Walnut Wolf</option>
+            <option>Sand Wolf</option>
+            <option>Hickory Wolf</option>
+        </optgroup>
+        <optgroup label="🔵 Rare Wolves">
+            <option>Black Wolf</option>
+            <option>Midnight Wolf</option>
+            <option>Blue Wolf</option>
+            <option>Silver Wolf</option>
+            <option>Arctic Wolf</option>
+            <option>Ginger Wolf</option>
+            <option>Anchor Wolf</option>
+            <option>Auburn Wolf</option>
+            <option>Nimbus Wolf</option>
+            <option>Stigma Wolf</option>
+            <option>Timeless Wolf</option>
+            <option>Wenge Wolf</option>
+            <option>Bronze Wolf</option>
+            <option>Gibber Wolf</option>
+            <option>Light Ochre Wolf</option>
+            <option>Rabbit Foot Wolf</option>
+            <option>Spotted Wolf</option>
+            <option>Sycamore Wolf</option>
+        </optgroup>
+        <optgroup label="🟣 Mythic Wolves">
+            <option>Nightshade Wolf</option>
+            <option>Earth Wolf</option>
+            <option>Shadow Wolf</option>
+            <option>Sentinel Wolf</option>
+            <option>Tidal Wolf</option>
+            <option>Departed Wolf</option>
+            <option>Eclipsed Wolf</option>
+            <option>Fire Wolf</option>
+            <option>Gleaming Wolf</option>
+            <option>Albino Wolf</option>
+            <option>Astral Wolf</option>
+            <option>Dark Light Wolf</option>
+            <option>Hyperborean Wolf</option>
+            <option>Mystery Wolf</option>
+            <option>Deep Blue Wolf</option>
+        </optgroup>
+        <optgroup label="🟡 Fantasy Wolves">
+            <option>Phantom Wolf</option>
+            <option>Sumac Wolf</option>
+            <option>Exalted Blazing Wolf</option>
+            <option>Exalted Thunder Wolf</option>
+            <option>Glacier Wolf</option>
+            <option>Egyptian Wolf</option>
+            <option>Spirit Wolf</option>
+            <option>Blazing Wolf</option>
+            <option>Wild Wolf</option>
+            <option>Guardian Wolf</option>
+            <option>Thunder Wolf</option>
+            <option>Radiant Wolf</option>
+            <option>Infected Wolf</option>
+            <option>Tusk Wolf</option>
+            <option>Crystalline Wolf</option>
+            <option>Eternal Wolf</option>
+            <option>Firestorm Wolf</option>
+            <option>Eclipse Wolf</option>
+            <option>Plume Wolf</option>
+            <option>Shinobi Wolf</option>
+            <option>Aarde Wolf</option>
+            <option>Bastion Wolf</option>
+            <option>Gaelic Wolf</option>
+            <option>Oriental Wolf</option>
+            <option>Cider Wolf</option>
+            <option>Gloom Wolf</option>
+        </optgroup>
+    </select>
+
+    <button id="saveCharacter">Save Character</button>
+    <div class="message" id="message"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyDCGMvY5Bxkhc8bzrKQQrvZHnaFGVMx7x4",
+    authDomain: "wolf-tales-character-creator.firebaseapp.com",
+    projectId: "wolf-tales-character-creator",
+    storageBucket: "wolf-tales-character-creator.firebasestorage.app",
+    messagingSenderId: "875949524760",
+    appId: "1:875949524760:web:bd2fc02e5480185a37c06d",
+    measurementId: "G-JK12EHGGPW"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const charactersRef = collection(db, "characters");
+
+// Save character function
+document.getElementById("saveCharacter").addEventListener("click", async () => {
+    const name = document.getElementById("wolfName").value.trim();
+    const type = document.getElementById("wolfType").value;
+
+    if(!name) {
+        document.getElementById("message").textContent = "Please enter a name!";
+        document.getElementById("message").style.color = "red";
+        return;
+    }
+
+    try {
+        await addDoc(charactersRef, {
+            name,
+            type,
+            createdAt: serverTimestamp()
+        });
+        document.getElementById("message").textContent = `Character "${name}" (${type}) saved!`;
+        document.getElementById("message").style.color = "green";
+        document.getElementById("wolfName").value = "";
+    } catch (error) {
+        document.getElementById("message").textContent = "Error saving character!";
+        document.getElementById("message").style.color = "red";
+        console.error(error);
+    }
+});
+</script>
+
+</body>
+</html>
